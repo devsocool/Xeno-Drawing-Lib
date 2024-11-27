@@ -60,7 +60,6 @@ DrawingLib.Fonts = {
     ["Monospace"] = 3
 }
 
--- Create a reusable pool for UI elements
 local function createUIElement(className, properties)
     local instance = Instance.new(className)
     for key, value in pairs(properties) do
@@ -132,7 +131,7 @@ function DrawingLib.createLine()
             lineFrame.Size = UDim2.new(0, (toPos - fromPos).Magnitude, 0, lineObj.Thickness)
             lineFrame.Rotation = math.deg(math.atan2(toPos.Y - fromPos.Y, toPos.X - fromPos.X))
             lineFrame.BackgroundColor3 = lineObj.Color
-            lineFrame.BackgroundTransparency = convertTransparency(lineObj.Transparency)
+            lineFrame.BackgroundTransparency = convertTransparency (lineObj.Transparency)
             lineFrame.Visible = lineObj.Visible
             lineFrame.ZIndex = lineObj.ZIndex
         end
@@ -178,6 +177,74 @@ function DrawingLib.createTextLabel()
             textLabel.ZIndex = textLabelObj.ZIndex
         end
     }, { __index = textLabelObj })
+end
+
+function DrawingLib.createCircle()
+    local circleObj = createBaseDrawingObj()
+    circleObj.Position = Vector2.zero
+    circleObj.Radius = 50
+
+    local circleFrame = createUIElement("Frame", {
+        Name = drawingIndex,
+        AnchorPoint = Vector2.new(0.5, 0.5),
+        BackgroundColor3 = circleObj.Color,
+        BackgroundTransparency = convertTransparency(circleObj.Transparency),
+        Size = UDim2.new(0, circleObj.Radius * 2, 0, circleObj.Radius * 2),
+        Position = UDim2.new(0, circleObj.Position.X, 0, circleObj.Position.Y),
+        ClipsDescendants = true
+    })
+
+    return setmetatable({
+        Position = circleObj.Position,
+        Radius = circleObj.Radius,
+        Color = circleObj.Color,
+        Transparency = circleObj.Transparency,
+        Visible = circleObj.Visible,
+        ZIndex = circleObj.ZIndex,
+        Remove = function()
+            circleFrame:Destroy()
+            circleObj:Remove()
+        end,
+        Update = function()
+            circleFrame.Position = UDim2.new(0, circleObj.Position.X, 0, circleObj.Position.Y)
+            circleFrame.Size = UDim2.new(0, circleObj.Radius * 2, 0, circleObj.Radius * 2)
+            circleFrame.BackgroundColor3 = circleObj.Color
+            circleFrame.BackgroundTransparency = convertTransparency(circleObj.Transparency)
+            circleFrame.Visible = circleObj.Visible
+            circleFrame.ZIndex = circleObj.ZIndex
+        end
+    }, { __index = circleObj })
+end
+
+function DrawingLib.createSquare()
+    local squareObj = createBaseDrawingObj()
+    squareObj.Size = 100
+
+    local squareFrame = createUIElement("Frame", {
+        Name = drawingIndex,
+        Size = UDim2.new(0, squareObj.Size, 0, squareObj.Size),
+        BackgroundColor3 = squareObj.Color,
+        BackgroundTransparency = convertTransparency(squareObj.Transparency)
+    })
+
+    return setmetatable({
+        Size = squareObj.Size,
+        Color = squareObj.Color,
+        Transparency = squareObj.Transparency,
+        Visible = squareObj.Visible,
+        ZIndex = squareObj.ZIndex,
+        Remove = function()
+            squareFrame:Destroy()
+            squareObj:Remove()
+        end,
+        Update = function()
+            squareFrame.Size = UDim2.new(0, squareObj.Size, 0, squareObj.Size)
+            squareFrame.BackgroundColor3 = squareObj.Color
+            squareFrame.BackgroundTransparency = convertTransparency(squareObj.Transparency)
+            squareFrame.Visible = squareObj.Visible
+            squareFrame.ZIndex = squareObj.ZIndex
+        end
+    }, { __index = squareObj })
 end
 
 return DrawingLib
